@@ -1,0 +1,10 @@
+test/
+examples/
+dist/
+yarn.lock
+.github
+*.config.js
+*.*.json
+tsconfig.json
+__tests__/
+index.html

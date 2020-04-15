@@ -1,0 +1,205 @@
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+}
+.react-grid-layout-grid {
+  position: absolute;
+  box-sizing: border-box;
+}
+.react-grid-layout-columns {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+.react-grid-layout-column {
+  height: 100%;
+  box-sizing: border-box;
+}
+.react-grid-layout-rows {
+  position: absolute;
+  box-sizing: border-box;
+}
+.react-grid-layout-row {
+  width: 100%;
+  box-sizing: border-box;
+}
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+.react-grid-item:not(.react-grid-placeholder) {
+  box-sizing: border-box;
+}
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+.react-grid-item.resizing {
+  z-index: 1;
+  will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 3;
+  will-change: transform;
+}
+
+.react-grid-item.dropping {
+  visibility: hidden;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: red;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.react-resizable-handle {
+  padding: 0;
+  background-image: none;
+  background: transparent;
+  margin: 0;
+}
+
+.react-resizable-handle-e,
+.react-resizable-handle-w,
+.react-resizable-handle-n,
+.react-resizable-handle-s,
+.react-resizable-handle-se,
+.react-resizable-handle-sw,
+.react-resizable-handle-ne,
+.react-resizable-handle-nw {
+  transform: none;
+}
+
+.react-grid-item > .react-resizable-handle-se {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.react-grid-item > .react-resizable-handle-sw {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+}
+
+.react-grid-item > .react-resizable-handle-ne {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+}
+
+.react-grid-item > .react-resizable-handle-nw {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+}
+
+.react-grid-item > .react-resizable-handle-s {
+  position: absolute;
+  height: 10px;
+  width: auto;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  cursor: ns-resize;
+}
+
+.react-grid-item > .react-resizable-handle-n {
+  position: absolute;
+  height: 10px;
+  width: auto;
+  top: 0;
+  left: 10px;
+  right: 10px;
+  cursor: ns-resize;
+}
+
+.react-grid-item > .react-resizable-handle-e {
+  position: absolute;
+  width: 10px;
+  height: auto;
+  top: 10px;
+  bottom: 10px;
+  right: 0;
+  cursor: ew-resize;
+}
+
+.react-grid-item > .react-resizable-handle-w {
+  position: absolute;
+  width: 10px;
+  height: auto;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  cursor: ew-resize;
+}
+
+.react-grid-item > .react-resizable-handle-se::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0px;
+  height: 0px;
+  border: 5px solid transparent;
+  border-right: 5px solid rgba(48, 48, 48, 0.3);
+  border-bottom: 5px solid rgba(48, 48, 48, 0.3);
+}
+
+.react-grid-item > .react-resizable-handle-sw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0px;
+  height: 0px;
+  border: 5px solid transparent;
+  border-left: 5px solid rgba(48, 48, 48, 0.3);
+  border-bottom: 5px solid rgba(48, 48, 48, 0.3);
+}
+
+.react-grid-item > .react-resizable-handle-ne::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 0px;
+  height: 0px;
+  border: 5px solid transparent;
+  border-right: 5px solid rgba(48, 48, 48, 0.3);
+  border-top: 5px solid rgba(48, 48, 48, 0.3);
+}
+
+.react-grid-item > .react-resizable-handle-nw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0px;
+  height: 0px;
+  border: 5px solid transparent;
+  border-left: 5px solid rgba(48, 48, 48, 0.3);
+  border-top: 5px solid rgba(48, 48, 48, 0.3);
+}
