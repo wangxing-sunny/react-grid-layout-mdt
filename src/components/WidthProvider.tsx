@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { BaseProps } from '../ReactGridLayout';
+import { BaseProps } from './ReactGridLayout';
 import { bottom } from '../utils/baseUtils';
 
 export interface WPProps {

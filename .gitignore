@@ -11,3 +11,4 @@ examples/*.js
 !examples/generate.js
 !examples/vars.js
 yarn-error.log
+.vscode/

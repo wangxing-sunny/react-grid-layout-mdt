@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual';
 import cloneDeep from 'lodash/cloneDeep';
 import { DraggableEvent } from 'react-draggable';
 
-import { bottom, right, Layout, LayoutItem } from './utils/baseUtils';
+import { bottom, right, Layout, LayoutItem } from '../utils/baseUtils';
 
 import ReactGridLayout from './ReactGridLayout';
 import { BaseProps } from './ReactGridLayout';

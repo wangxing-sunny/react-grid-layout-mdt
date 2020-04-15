@@ -371,7 +371,7 @@ export function moveElementAwayFromCollision(
   );
 }
 
-export function perc(num: number): string {
+export function percent(num: number): string {
   return num * 100 + '%';
 }
 
@@ -421,7 +421,7 @@ export function sortLayoutItems(
  * 先上下后左右排序
  */
 export function sortLayoutItemsByRowCol(layout: Layout): Layout {
-  return cloneDeep(layout).sort(function(a, b) {
+  return cloneDeep(layout).sort(function (a, b) {
     if (a.y > b.y || (a.y === b.y && a.x > b.x)) {
       return 1;
     } else if (a.y === b.y && a.x === b.x) {
@@ -435,7 +435,7 @@ export function sortLayoutItemsByRowCol(layout: Layout): Layout {
  * 先左右后上下排序
  */
 export function sortLayoutItemsByColRow(layout: Layout): Layout {
-  return cloneDeep(layout).sort(function(a, b) {
+  return cloneDeep(layout).sort(function (a, b) {
     if (a.x > b.x || (a.x === b.x && a.y > b.y)) {
       return 1;
     } else if (a.y === b.y && a.x === b.x) {

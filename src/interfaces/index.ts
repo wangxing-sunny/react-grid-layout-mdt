@@ -1,29 +1,27 @@
 import { CSSProperties } from 'react';
 import { DraggableEvent } from 'react-draggable';
 
-export interface LayoutItem {
-  w?: number;
-  h?: number;
-  x?: number;
-  y?: number;
-  i: string;
-  minW?: number;
-  minH?: number;
-  maxW?: number;
-  maxH?: number;
-  moved?: boolean;
-  static?: boolean;
-  isDraggable?: boolean;
-  isResizable?: boolean;
+export interface Position {
+  left: number;
+  top: number;
 }
 
-export type Layout = Array<LayoutItem>;
-
+export interface Size {
+  width: number;
+  height: number;
+}
 export interface Block {
   left: number;
   top: number;
   width: number;
   height: number;
+}
+
+export interface Coordinate {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 export interface ReactDraggableCallbackData {
@@ -36,26 +34,10 @@ export interface ReactDraggableCallbackData {
   lastY?: number;
 }
 
-export interface PartialPosition {
-  left: number;
-  top: number;
-}
-
-export interface DroppingPosition {
-  x: number;
-  y: number;
-  e: DraggableEvent;
-}
-
-export interface Size {
-  width: number;
-  height: number;
-}
-
 export interface GridDragEvent {
   e: DraggableEvent;
   node: HTMLElement;
-  newPosition: PartialPosition;
+  newPosition: Position;
 }
 
 export interface GridResizeEvent {
@@ -86,43 +68,74 @@ export type EventCallback = (
 export enum CompactType {
   horizontal = 'horizontal',
   vertical = 'vertical',
+  both = 'both',
   none = ''
 }
 
-export interface BaseProps {
-  className?: string;
-  style?: CSSProperties;
-  width?: number;
-  autoSize?: boolean;
-  cols?: number;
-  resizableHandles?: Array<string>;
-  draggableCancel?: string;
-  draggableHandle?: string;
-  verticalCompact?: boolean;
-  compactType?: CompactType;
-  layout?: Layout;
-  margin?: [number, number];
-  containerPadding?: [number, number] | null;
-  rowHeight?: number;
-  maxRows?: number;
-  maxCols?: number;
+export interface DropParams extends LayoutItem {
+  event: Event;
+}
+
+export interface LayoutItem {
+  w?: number;
+  h?: number;
+  x?: number;
+  y?: number;
+  i: string;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
+  moved?: boolean;
+  static?: boolean;
   isDraggable?: boolean;
   isResizable?: boolean;
-  isDroppable?: boolean;
-  preventCollision?: boolean;
-  showGrid?: boolean;
-  gridColor?: string;
-  useCSSTransforms?: boolean;
-  transformScale?: number;
-  droppingItem?: LayoutItem;
+}
+
+export type Layout = Array<LayoutItem>;
+
+export interface BaseProps {
+  className?: string; // class
+  style?: CSSProperties; // style
+
+  width?: number; // 容器宽度
+  columnWidth?: number; // 单格宽度
+  cols?: number; // 列数
+  maxCols?: number; // 最大列数
+
+  height?: number; // 容器高度
+  rowHeight?: number; // 单格高度
+  rows?: number; // 行数
+  maxRows?: number; // 最大行数
+
+  autoSize?: boolean; // 自动缩放撑满容器
+  squareGrid?: boolean; // 正方形网格，columnWidth = rowHeight
+
+  layout: Layout; // 布局
+
+  compactType?: CompactType; // 堆积方向
+  preventCollision?: boolean; // 禁止推挤
+  margin?: [number, number]; // 网格间距
+  containerPadding?: [number, number]; // 容器内边距
+  isDraggable?: boolean; // 可拖拽
+  isResizable?: boolean; // 可改变大小
+  isDroppable?: boolean; // 可拖动添加
+  showGrid?: boolean; // 显示网格
+  gridColor?: string; // 网格颜色
+  resizableHandles?: Array<string>; // TODO，可调整大小的方向
+  draggableCancel?: string; // 不可拖拽的元素选择器
+  draggableHandle?: string; // 用于拖拽的元素选择器
+  useCSSTransforms?: boolean; // 使用CSS3-translate代替position+top+left定位
+  transformScale?: number; // 容器存在scale时设置，保证拖拽不出错
+  droppingItem?: LayoutItem; // 从外部拖拽的项目
   // callbacks
   onLayoutChange?: (layout: Layout) => void;
-  onDrag?: EventCallback;
-  onDragStart?: EventCallback;
-  onDragStop?: EventCallback;
-  onResize?: EventCallback;
-  onResizeStart?: EventCallback;
-  onResizeStop?: EventCallback;
-  onDrop?: (itemPosition: ItemPosition) => void;
-  children?: React.ReactNode;
+  onDragStart?: EventCallback; // 开始拖拽
+  onDrag?: EventCallback; // 拖拽中
+  onDragStop?: EventCallback; // 停止拖拽
+  onResizeStart?: EventCallback; // 开始调整大小
+  onResize?: EventCallback; // 调整大小中
+  onResizeStop?: EventCallback; // 停止调整大小
+  onDrop?: (param: DropParams) => void; // 放置
+  children?: React.ReactNode; // 子元素
 }

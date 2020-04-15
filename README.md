@@ -1,4 +1,4 @@
-# React-Grid-Layout-Mtd
+# React-Grid-Layout-Mdt
 
 ## About this Project
 
@@ -57,17 +57,23 @@ class MyFirstGrid extends React.Component {
   render() {
     // layout is an array of objects, see the demo for more complete usage
     var layout = [
-      {i: 'a', x: 0, y: 0, w: 1, h: 2, static: true},
-      {i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4},
-      {i: 'c', x: 4, y: 0, w: 1, h: 2}
+      { i: 'a', x: 0, y: 0, w: 1, h: 2, static: true },
+      { i: 'b', x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
+      { i: 'c', x: 4, y: 0, w: 1, h: 2 }
     ];
     return (
-      <GridLayout className="layout" layout={layout} cols={12} rowHeight={30} width={1200}>
+      <GridLayout
+        className="layout"
+        layout={layout}
+        cols={12}
+        rowHeight={30}
+        width={1200}
+      >
         <div key="a">a</div>
         <div key="b">b</div>
         <div key="c">c</div>
       </GridLayout>
-    )
+    );
   }
 }
 ```
@@ -81,11 +87,17 @@ class MyFirstGrid extends React.Component {
   render() {
     return (
       <GridLayout className="layout" cols={12} rowHeight={30} width={1200}>
-        <div key="a" data-grid={{x: 0, y: 0, w: 1, h: 2, static: true}}>a</div>
-        <div key="b" data-grid={{x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4}}>b</div>
-        <div key="c" data-grid={{x: 4, y: 0, w: 1, h: 2}}>c</div>
+        <div key="a" data-grid={{ x: 0, y: 0, w: 1, h: 2, static: true }}>
+          a
+        </div>
+        <div key="b" data-grid={{ x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 }}>
+          b
+        </div>
+        <div key="c" data-grid={{ x: 4, y: 0, w: 1, h: 2 }}>
+          c
+        </div>
       </GridLayout>
-    )
+    );
   }
 }
 ```
@@ -107,14 +119,17 @@ class MyResponsiveGrid extends React.Component {
     // {lg: layout1, md: layout2, ...}
     var layouts = getLayoutsFromSomewhere();
     return (
-      <ResponsiveGridLayout className="layout" layouts={layouts}
-        breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
-        cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}>
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      >
         <div key="1">1</div>
         <div key="2">2</div>
         <div key="3">3</div>
       </ResponsiveGridLayout>
-    )
+    );
   }
 }
 ```
@@ -146,20 +161,24 @@ class MyResponsiveGrid extends React.Component {
     // {lg: layout1, md: layout2, ...}
     var layouts = getLayoutsFromSomewhere();
     return (
-      <ResponsiveGridLayout className="layout" layouts={layouts}
-        breakpoints={{lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0}}
-        cols={{lg: 12, md: 10, sm: 6, xs: 4, xxs: 2}}>
+      <ResponsiveGridLayout
+        className="layout"
+        layouts={layouts}
+        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+      >
         <div key="1">1</div>
         <div key="2">2</div>
         <div key="3">3</div>
       </ResponsiveGridLayout>
-    )
+    );
   }
 }
 ```
 
 ### Adapative Usage
-When your container has a fixed width or height, you can use `<AdaptiveReactGridLayout>` to make the layout 
+
+When your container has a fixed width or height, you can use `<AdaptiveReactGridLayout>` to make the layout
 always adapt to the container.
 
 ```js
@@ -169,13 +188,17 @@ class MyAdaptiveGrid extends React.Component {
   render() {
     var layout = getLayoutsFromSomewhere();
     return (
-      <Adaptive className="layout" layout={layout}
-        maxCols={8} rowsAdaptable={true}>
+      <Adaptive
+        className="layout"
+        layout={layout}
+        maxCols={8}
+        rowsAdaptable={true}
+      >
         <div key="1">1</div>
         <div key="2">2</div>
         <div key="3">3</div>
       </Adaptive>
-    )
+    );
   }
 }
 ```
@@ -234,7 +257,7 @@ containerPadding?: [number, number] = margin,
 // if you like.
 rowHeight?: number = 150,
 
-// Configuration of a dropping element. Dropping element is a "virtual" element 
+// Configuration of a dropping element. Dropping element is a "virtual" element
 // which appears when you drag over some element from outside.
 // It can be changed by passing specific parameters:
 //  i - id of an element
@@ -258,9 +281,9 @@ transformScale?: number = 1,
 // dragged over.
 preventCollision?: boolean = false;
 
-// If true, droppable elements (with `draggable={true}` attribute) 
+// If true, droppable elements (with `draggable={true}` attribute)
 // can be dropped on the grid. It triggers "onDrop" callback
-// with position and event object as parameters. 
+// with position and event object as parameters.
 // It can be useful for dropping an element in a specific position
 //
 // NOTE: In case of using Firefox you should add

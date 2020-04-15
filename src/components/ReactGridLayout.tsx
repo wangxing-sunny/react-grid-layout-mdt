@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import * as PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
@@ -15,7 +15,7 @@ import {
   getAllCollisions,
   noop,
   right
-} from './utils/baseUtils';
+} from '../utils/baseUtils';
 import GridItem, { ItemPosition } from './GridItem';
 
 // Types
@@ -28,9 +28,11 @@ import {
   Layout,
   DroppingPosition,
   LayoutItem
-} from './utils/baseUtils';
+} from '../utils/baseUtils';
 
 import '../css/styles.css';
+import { BaseProps } from '../interfaces';
+import { CompactType } from '../interfaces/index';
 
 type BaseState = {
   activeDrag?: LayoutItem;
@@ -47,44 +49,6 @@ type BaseState = {
   propsLayout?: Layout;
 };
 
-export interface BaseProps {
-  className?: string;
-  style?: object;
-  width?: number;
-  autoSize?: boolean;
-  cols?: number;
-  resizableHandles?: Array<string>;
-  draggableCancel?: string;
-  draggableHandle?: string;
-  verticalCompact?: boolean;
-  compactType?: CompactType;
-  layout?: Layout;
-  margin?: [number, number];
-  containerPadding?: [number, number] | null;
-  rowHeight?: number;
-  maxRows?: number;
-  maxCols?: number;
-  isDraggable?: boolean;
-  isResizable?: boolean;
-  isDroppable?: boolean;
-  preventCollision?: boolean;
-  showGrid?: boolean;
-  gridColor?: string;
-  useCSSTransforms?: boolean;
-  transformScale?: number;
-  droppingItem?: LayoutItem;
-
-  // Callbacks
-  onLayoutChange?: (layout: Layout) => void;
-  onDrag?: EventCallback;
-  onDragStart?: EventCallback;
-  onDragStop?: EventCallback;
-  onResize?: EventCallback;
-  onResizeStart?: EventCallback;
-  onResizeStop?: EventCallback;
-  onDrop?: (itemPosition: ItemPosition) => void;
-  children?: React.ReactNode;
-}
 // End Types
 
 const compactType = (props: BaseProps): CompactType => {
@@ -106,10 +70,7 @@ try {
  * A reactive, fluid grid layout with draggable, resizable components.
  */
 
-export default class ReactGridLayout extends React.Component<
-  BaseProps,
-  BaseState
-> {
+export class AReactGridLayout extends React.Component<BaseProps, BaseState> {
   // TODO publish internal ReactClass displayName transform
   static displayName = 'ReactGridLayout';
 
@@ -779,3 +740,105 @@ export default class ReactGridLayout extends React.Component<
     );
   }
 }
+
+const ReactGridLayout = memo((props: BaseProps) => {
+  const {
+    className = '',
+    style,
+    width,
+    columnWidth,
+    cols = 6,
+    maxCols = 12,
+    height,
+    rowHeight = 80,
+    rows,
+    maxRows,
+    autoSize = true,
+    squareGrid = false,
+    layout,
+    compactType = '',
+    preventCollision = false,
+    margin = [5, 5],
+    containerPadding = [5, 5],
+    isDraggable = true,
+    isResizable = true,
+    isDroppable = false,
+    showGrid = true,
+    gridColor = '#38497b',
+    resizableHandles = ['se'],
+    draggableCancel,
+    draggableHandle,
+    useCSSTransforms = true,
+    transformScale = 1,
+    droppingItem,
+    onLayoutChange,
+    onDragStart,
+    onDrag,
+    onDragStop,
+    onResizeStart,
+    onResize,
+    onResizeStop,
+    onDrop
+  } = props;
+  return (
+    <div
+      className={`react-grid-layout ${className}`}
+      style={mergedStyle}
+      onDrop={isDroppable ? this.onDrop : noop}
+      onDragLeave={isDroppable ? this.onDragLeave : noop}
+      onDragEnter={isDroppable ? this.onDragEnter : noop}
+      onDragOver={isDroppable ? this.onDragOver : noop}
+    >
+      {showGrid && (
+        <div className="react-grid-layout-grid">
+          <div
+            className="react-grid-layout-columns"
+            style={{ height: mergedStyle.height }}
+          >
+            {columns.map((column, i) => {
+              return (
+                <div
+                  key={i}
+                  className="react-grid-layout-column"
+                  style={{
+                    width: columnWidth,
+                    marginLeft: i == 0 ? paddingX : margin[0],
+                    borderLeft: '1px solid ' + gridColor,
+                    borderRight: '1px solid ' + gridColor
+                  }}
+                />
+              );
+            })}
+          </div>
+          <div className="react-grid-layout-rows" style={{ width: rowWidth }}>
+            {rows.map((row, i) => {
+              return (
+                <div
+                  key={i}
+                  className="react-grid-layout-row"
+                  style={{
+                    height: rowHeight,
+                    marginTop: i == 0 ? paddingY : margin[1],
+                    borderTop: '1px solid ' + gridColor,
+                    borderBottom: '1px solid ' + gridColor
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {React.Children.map(this.props.children, child =>
+        this.processGridItem(child)
+      )}
+      {isDroppable &&
+        this.state.droppingDOMNode &&
+        this.processGridItem(this.state.droppingDOMNode, true)}
+      {this.placeholder()}
+    </div>
+  );
+});
+
+ReactGridLayout.displayName = 'ReactGridLayout';
+
+export default ReactGridLayout;

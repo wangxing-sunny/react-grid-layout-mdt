@@ -1,20 +1,17 @@
 import React from 'react';
 import { DraggableCore, DraggableEvent, DraggableData } from 'react-draggable';
 import { Resizable, ResizeCallbackData } from 'react-resizable';
-import { perc, setTopLeft, setTransform, Size } from './utils/baseUtils';
+import { percent, setTopLeft, setTransform } from '../utils/baseUtils';
 import classNames from 'classnames';
 
 import {
+  Size,
   GridDragEvent,
   GridResizeEvent,
   DroppingPosition,
+  Coordinate,
   Position
-} from './utils/baseUtils';
-
-type PartialPosition = {
-  top: number;
-  left: number;
-};
+} from '../interfaces';
 
 export type ItemPosition = {
   x?: number;
@@ -25,7 +22,7 @@ export type ItemPosition = {
 
 type GridItemResizeCallback = (
   i: string,
-  pos: ItemPosition,
+  pos: Coordinate,
   Data: GridResizeEvent
 ) => void;
 
@@ -294,8 +291,8 @@ export default class GridItem extends React.Component<GIProps, GIState> {
 
       // This is used for server rendering.
       if (usePercentages) {
-        style.left = perc(pos.left / containerWidth);
-        style.width = perc(pos.width / containerWidth);
+        style.left = percent(pos.left / containerWidth);
+        style.width = percent(pos.width / containerWidth);
       }
     }
 
@@ -409,11 +406,11 @@ export default class GridItem extends React.Component<GIProps, GIState> {
    */
   onDrag = (
     e: DraggableEvent,
-    { node, deltaX, deltaY }: DraggableData
+    { node, x, y, deltaX, deltaY, lastX, lastY }: DraggableData
   ): void | false => {
     if (!this.props.onDrag) return false;
 
-    const newPosition: PartialPosition = { top: 0, left: 0 };
+    const newPosition: Position = { top: 0, left: 0 };
 
     if (!this.state.dragging)
       throw new Error('onDrag called before onDragStart.');
