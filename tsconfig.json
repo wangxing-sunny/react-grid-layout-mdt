@@ -1,15 +1,25 @@
 {
-  "compileOnSave": true,
+  "compileOnSave": false,
   "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "esModuleInterop": true,
     "outDir": "./build/",
     "sourceMap": true,
     "declaration": true,
     "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es5",
+    "module": "esnext",
     "jsx": "react",
-    "lib": ["dom", "es6"]
+    "allowJs": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "experimentalDecorators": true
   },
   "exclude": ["node_modules", "test", "dist"],
   "include": ["src/**/*"]

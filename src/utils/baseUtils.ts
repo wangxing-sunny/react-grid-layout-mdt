@@ -464,9 +464,6 @@ export function synchronizeLayoutWithChildren(
     } else {
       const g = child.props['data-grid'];
       if (g) {
-        if (!isProduction) {
-          validateLayout([g], 'ReactGridLayout.children');
-        }
         layout[i] = cloneLayoutItem({ ...g, i: child.key });
       } else {
         layout[i] = cloneLayoutItem({
@@ -485,49 +482,17 @@ export function synchronizeLayoutWithChildren(
   return layout;
 }
 
-/**
- * 检测layout是否符合格式
- */
-export function validateLayout(
-  layout: Layout,
-  contextName: string = 'Layout'
-): void {
-  const subProps = ['x', 'y', 'w', 'h'];
-  if (!Array.isArray(layout))
-    throw new Error(contextName + ' must be an array!');
-  for (let i = 0, len = layout.length; i < len; i++) {
-    const item = layout[i];
-    for (let j = 0; j < subProps.length; j++) {
-      if (typeof item[subProps[j] as keyof LayoutItem] !== 'number') {
-        throw new Error(
-          `ReactGridLayout: ${contextName}[${i}].${subProps[j]} must be a number!`
-        );
-      }
-    }
-    if (item.i && typeof item.i !== 'string') {
-      throw new Error(
-        `ReactGridLayout: ${contextName}[${i}].i must be a string!`
-      );
-    }
-    if (item.static !== undefined && typeof item.static !== 'boolean') {
-      throw new Error(
-        `ReactGridLayout: ${contextName}[${i}].static must be a boolean!`
-      );
-    }
-  }
-}
-
 export function autoBindHandlers(
   el: { [key: string]: any },
   fns: Array<string>
 ): void {
-  fns.forEach(key => (el[key] = el[key].bind(el)));
+  fns.forEach(fn => (el[fn] = el[fn].bind(el)));
 }
 
-function log(...args: any) {
+export function log(...args: any) {
   if (isProduction) return;
   // eslint-disable-next-line no-console
   console.log(...args);
 }
 
-export type Noop = () => void;
+export const Noop = () => {};

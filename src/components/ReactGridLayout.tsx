@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo, useState, useEffect } from 'react';
 import * as PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
@@ -11,9 +11,8 @@ import {
   getLayoutItem,
   moveElement,
   synchronizeLayoutWithChildren,
-  validateLayout,
   getAllCollisions,
-  noop,
+  Noop,
   right
 } from '../utils/baseUtils';
 import GridItem, { ItemPosition } from './GridItem';
@@ -759,7 +758,7 @@ const ReactGridLayout = memo((props: BaseProps) => {
     compactType = '',
     preventCollision = false,
     margin = [5, 5],
-    containerPadding = [5, 5],
+    containerPadding,
     isDraggable = true,
     isResizable = true,
     isDroppable = false,
@@ -780,14 +779,33 @@ const ReactGridLayout = memo((props: BaseProps) => {
     onResizeStop,
     onDrop
   } = props;
+  const onDragEnter = () => {};
+  const onDragOver = () => {};
+  const onDragLeave = () => {};
+
+  const [currentLayout, setCurrentLayout] = useState(layout);
+
+  useEffect(() => {
+    setCurrentLayout(layout);
+  }, [layout]);
+
+  const containerHeight = useMemo(() => {
+    if (!autoSize) return '';
+    const nbRow = bottom(currentLayout);
+    const containerPaddingY = containerPadding ? containerPadding[1] : 0;
+    return `${
+      nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2
+    }px`;
+  }, []);
+
   return (
     <div
       className={`react-grid-layout ${className}`}
-      style={mergedStyle}
-      onDrop={isDroppable ? this.onDrop : noop}
-      onDragLeave={isDroppable ? this.onDragLeave : noop}
-      onDragEnter={isDroppable ? this.onDragEnter : noop}
-      onDragOver={isDroppable ? this.onDragOver : noop}
+      style={style}
+      onDrop={isDroppable ? onDrop : Noop}
+      onDragLeave={isDroppable ? onDragLeave : Noop}
+      onDragEnter={isDroppable ? onDragEnter : Noop}
+      onDragOver={isDroppable ? onDragOver : Noop}
     >
       {showGrid && (
         <div className="react-grid-layout-grid">

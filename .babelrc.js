@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
   "presets": [
     [
@@ -20,4 +18,4 @@ module.exports = {
       ]
     }
   }
-}
+};
