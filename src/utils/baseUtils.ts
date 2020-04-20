@@ -5,8 +5,6 @@ import isEqual from 'lodash/isEqual';
 import filter from 'lodash/filter';
 import cloneDeep from 'lodash/cloneDeep';
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 /**
  * 计算布局最底部坐标
  */
@@ -48,7 +46,7 @@ export function cloneLayoutItem(layoutItem: LayoutItem): LayoutItem {
     minH: layoutItem.minH,
     maxH: layoutItem.maxH,
     moved: Boolean(layoutItem.moved),
-    static: Boolean(layoutItem.static),
+    isStatic: Boolean(layoutItem.isStatic),
     isDraggable: layoutItem.isDraggable,
     isResizable: layoutItem.isResizable
   };
@@ -66,10 +64,13 @@ export function cloneLayout(layout: Layout): Layout {
 /**
  * 简化比较两个react-node
  */
-export function childrenEqual(a: React.ReactNode, b: React.ReactNode): boolean {
+export function childrenEqual(
+  a: React.ReactElement,
+  b: React.ReactElement
+): boolean {
   return isEqual(
-    React.Children.map(a, c => (c as any).key),
-    React.Children.map(b, c => (c as any).key)
+    React.Children.map(a, c => c.key),
+    React.Children.map(b, c => c.key)
   );
 }
 
@@ -99,7 +100,7 @@ export function compact(
 
   for (let i = 0, len = sorted.length; i < len; i++) {
     let l = cloneLayoutItem(sorted[i]);
-    if (!l.static) {
+    if (!l.isStatic) {
       l = compactItem(compareWith, l, compactType, cols, sorted);
       compareWith.push(l);
     }
@@ -127,7 +128,7 @@ function resolveCompactionCollision(
 
   for (let i = itemIndex + 1; i < layout.length; i++) {
     const otherItem = layout[i];
-    if (otherItem.static) continue;
+    if (otherItem.isStatic) continue;
     if (otherItem.y > item.y + item.h) break;
 
     if (collides(item, otherItem)) {
@@ -197,7 +198,7 @@ export function correctBounds(
       l.x = 0;
       l.w = bounds.cols;
     }
-    if (!l.static) {
+    if (!l.isStatic) {
       collidesWith.push(l);
     } else {
       while (getFirstCollision(collidesWith, l)) {
@@ -245,7 +246,7 @@ export function getAllCollisions(
  * 获取所有固定grid
  */
 export function getStatics(layout: Layout): Array<LayoutItem> {
-  return layout.filter(l => l.static);
+  return layout.filter(l => l.isStatic);
 }
 
 /**
@@ -261,9 +262,9 @@ export function moveElement(
   compactType?: CompactType,
   cols?: number
 ): Layout {
-  if (l.static) return layout;
+  if (l.isStatic) return layout;
   if (l.y === y && l.x === x) return layout;
-  log(`把${l.i}从[${l.x},${l.y}]移动到[${String(x)},${String(y)}]`);
+  console.log(`把${l.i}从[${l.x},${l.y}]移动到[${String(x)},${String(y)}]`);
   const oldX = l.x,
     oldY = l.y;
 
@@ -271,7 +272,7 @@ export function moveElement(
   if (typeof y === 'number') l.y = y;
   l.moved = true;
 
-  let sorted = sortLayoutItems(layout, compactType);
+  const sorted = sortLayoutItems(layout, compactType);
   const movingUp =
     compactType === CompactType.vertical && typeof y === 'number'
       ? oldY >= y
@@ -282,7 +283,7 @@ export function moveElement(
   const collisions = getAllCollisions(sorted, l);
 
   if (preventCollision && collisions.length) {
-    log(`${l.i}禁止碰撞，还原`);
+    console.log(`${l.i}禁止碰撞，还原`);
     l.x = oldX;
     l.y = oldY;
     l.moved = false;
@@ -291,11 +292,11 @@ export function moveElement(
 
   for (let i = 0, len = collisions.length; i < len; i++) {
     const collision = collisions[i];
-    log(
+    console.log(
       `解决${l.i}位置[${l.x},${l.y}]和${collision.i}位置[${collision.x},${collision.y}]的碰撞。`
     );
     if (collision.moved) continue;
-    if (collision.static) {
+    if (collision.isStatic) {
       layout = moveElementAwayFromCollision(
         layout,
         collision,
@@ -332,7 +333,7 @@ export function moveElementAwayFromCollision(
 ): Layout {
   const compactH = compactType === CompactType.horizontal;
   const compactV = compactType !== CompactType.horizontal;
-  const preventCollision = collidesWith.static;
+  const preventCollision = collidesWith.isStatic;
   if (isUserAction) {
     isUserAction = false;
     const fakeItem: LayoutItem = {
@@ -343,7 +344,7 @@ export function moveElementAwayFromCollision(
       i: '-1'
     };
     if (!getFirstCollision(layout, fakeItem)) {
-      log(
+      console.log(
         `Doing reverse collision on ${itemToMove.i} up to [${fakeItem.x},${fakeItem.y}].`
       );
       return moveElement(
@@ -408,7 +409,7 @@ export function setTopLeft({ top, left, width, height }: Block): CSSProperties {
  */
 export function sortLayoutItems(
   layout: Layout,
-  compactType: CompactType
+  compactType?: CompactType
 ): Layout {
   if (compactType === 'horizontal') {
     return sortLayoutItemsByColRow(layout);
@@ -450,7 +451,7 @@ export function sortLayoutItemsByColRow(layout: Layout): Layout {
  */
 export function synchronizeLayoutWithChildren(
   initialLayout: Layout,
-  children: React.ReactNode,
+  children: React.ReactElement,
   cols: number,
   compactType: CompactType
 ): Layout {
@@ -483,16 +484,11 @@ export function synchronizeLayoutWithChildren(
 }
 
 export function autoBindHandlers(
+  /* eslint-disable-next-line */
   el: { [key: string]: any },
   fns: Array<string>
 ): void {
   fns.forEach(fn => (el[fn] = el[fn].bind(el)));
 }
 
-export function log(...args: any) {
-  if (isProduction) return;
-  // eslint-disable-next-line no-console
-  console.log(...args);
-}
-
-export const Noop = () => {};
+export const Noop = () => {}; /* eslint-disable-line */

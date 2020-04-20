@@ -24,6 +24,24 @@ export interface Coordinate {
   h: number;
 }
 
+export interface LayoutItem {
+  w: number;
+  h: number;
+  x: number;
+  y: number;
+  i: string;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
+  moved?: boolean;
+  isStatic?: boolean;
+  isDraggable?: boolean;
+  isResizable?: boolean;
+}
+
+export type Layout = Array<LayoutItem>;
+
 export interface ReactDraggableCallbackData {
   node: HTMLElement;
   x?: number;
@@ -76,23 +94,38 @@ export interface DropParams extends LayoutItem {
   event: Event;
 }
 
-export interface LayoutItem {
-  w?: number;
-  h?: number;
-  x?: number;
-  y?: number;
-  i: string;
-  minW?: number;
-  minH?: number;
-  maxW?: number;
-  maxH?: number;
-  moved?: boolean;
-  static?: boolean;
-  isDraggable?: boolean;
-  isResizable?: boolean;
-}
+export interface GridItemProps extends LayoutItem {
+  className?: string;
+  style?: React.CSSProperties;
+  cols: number;
+  rows: number;
+  colWidth: number;
+  rowHeight: number;
+  maxRows?: number;
+  maxCols?: number;
 
-export type Layout = Array<LayoutItem>;
+  containerWidth?: number;
+  margin: [number, number];
+  containerPadding: [number, number];
+
+  cssTransforms?: boolean;
+  transformScale?: number;
+  droppingPosition?: DropParams;
+
+  resizeHandles?: string[];
+  // Draggability
+  cancel?: string;
+  handle?: string;
+
+  // onDrag?: GridItemDragCallback;
+  // onDragStart?: GridItemDragCallback;
+  // onDragStop?: GridItemDragCallback;
+  // onResize?: GridItemResizeCallback;
+  // onResizeStart?: GridItemResizeCallback;
+  // onResizeStop?: GridItemResizeCallback;
+
+  children: React.ReactElement;
+}
 
 export interface BaseProps {
   className?: string; // class

@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState, useEffect } from 'react';
+import React, { memo, useMemo, useState, useEffect, useCallback } from 'react';
 import * as PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import classNames from 'classnames';
@@ -790,13 +790,13 @@ const ReactGridLayout = memo((props: BaseProps) => {
   }, [layout]);
 
   const containerHeight = useMemo(() => {
-    if (!autoSize) return '';
+    if (height) return height;
     const nbRow = bottom(currentLayout);
     const containerPaddingY = containerPadding ? containerPadding[1] : 0;
-    return `${
-      nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2
-    }px`;
+    return nbRow * rowHeight + (nbRow - 1) * margin[1] + containerPaddingY * 2;
   }, []);
+
+  const onDragStart = useCallback(() => {}, []);
 
   return (
     <div
