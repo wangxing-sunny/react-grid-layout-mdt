@@ -5,23 +5,12 @@ import React, {
   useMemo,
   memo
 } from 'react';
-import {
-  DraggableCore /* , DraggableEvent, DraggableData */
-} from 'react-draggable';
-import { Resizable /* , ResizeCallbackData */ } from 'react-resizable';
+import { DraggableCore, DraggableEvent, DraggableData } from 'react-draggable';
+import { Resizable, ResizeCallbackData } from 'react-resizable';
 import { setTopLeft, setTransform } from '../utils/baseUtils';
 import classNames from 'classnames';
 
-import {
-  Size,
-  /* GridDragEvent,
-  GridResizeEvent,
-  DropParams,
-  Coordinate, */
-  Position,
-  GridItemProps,
-  Block
-} from '../interfaces';
+import { GridItemProps, Position, Size, Block } from '../interfaces';
 const GridItem = memo((props: GridItemProps) => {
   const {
     className,
@@ -29,6 +18,7 @@ const GridItem = memo((props: GridItemProps) => {
     isStatic = false,
     isDraggable = true,
     isResizable = true,
+    i,
     x,
     y,
     w,
@@ -37,8 +27,6 @@ const GridItem = memo((props: GridItemProps) => {
     maxW,
     minH = 1,
     maxH,
-    // cols,
-    // rows,
     maxCols,
     maxRows,
     colWidth,
@@ -47,14 +35,18 @@ const GridItem = memo((props: GridItemProps) => {
     containerPadding,
     cssTransforms = true,
     transformScale = 1,
-    droppingPosition,
     handle,
     cancel,
+    onResizeStart,
+    onResize,
+    onResizeStop,
+    onDragStart,
+    onDrag,
+    onDragStop,
     children
   } = props;
-  /* eslint-disable-next-line */
-  const [dragging, setDragging] = useState<Position>();
-  const [resizing, setResizing] = useState<Size>(); /* eslint-disable-line */
+  const [dragging, setDragging] = useState<Position | null>(null);
+  const [resizing, setResizing] = useState<Size | null>(null);
 
   const createStyle = useCallback(
     (pos: Block) => {
@@ -68,6 +60,57 @@ const GridItem = memo((props: GridItemProps) => {
       return style;
     },
     [cssTransforms]
+  );
+
+  const calcXY = useCallback(
+    ({
+      top,
+      left
+    }: Position): {
+      x: number;
+      y: number;
+    } => {
+      let x = Math.round((left - containerPadding[0]) / (colWidth + margin[0]));
+      let y = Math.round((top - containerPadding[1]) / (rowHeight + margin[1]));
+
+      x = Math.max(maxCols ? Math.min(x, maxCols - w) : x, 0);
+      y = Math.max(maxRows ? Math.min(y, maxRows - h) : y, 0);
+      return { x, y };
+    },
+    [colWidth, containerPadding, h, margin, maxCols, maxRows, rowHeight, w]
+  );
+
+  const calcWH = useCallback(
+    ({
+      width,
+      height
+    }: Size): {
+      w: number;
+      h: number;
+    } => {
+      let w = Math.round((width + margin[0]) / (colWidth + margin[0]));
+      let h = Math.round((height + margin[1]) / (rowHeight + margin[1]));
+
+      w = Math.max(maxCols ? Math.min(w, maxCols - x) : w, 0);
+      h = Math.max(maxRows ? Math.min(h, maxRows - y) : h, 0);
+
+      w = Math.max(maxW ? Math.min(w, maxW) : w, minW);
+      h = Math.max(maxH ? Math.min(h, maxH) : w, minH);
+      return { w, h };
+    },
+    [
+      colWidth,
+      margin,
+      maxCols,
+      maxH,
+      maxRows,
+      maxW,
+      minH,
+      minW,
+      rowHeight,
+      x,
+      y
+    ]
   );
 
   const calcPosition = useCallback(
@@ -92,9 +135,115 @@ const GridItem = memo((props: GridItemProps) => {
     [colWidth, containerPadding, dragging, margin, resizing, rowHeight]
   );
 
+  const itemPosition = useMemo(() => calcPosition(x, y, w, h), [
+    calcPosition,
+    h,
+    w,
+    x,
+    y
+  ]);
+
+  const _onDragStart = useCallback(
+    (e: DraggableEvent, { node }: DraggableData) => {
+      if (!onDragStart) return;
+      const newPosition: Position = { top: 0, left: 0 };
+      const { offsetParent } = node;
+      if (!offsetParent) return;
+      const parentRect = offsetParent.getBoundingClientRect();
+      const clientRect = node.getBoundingClientRect();
+      const cLeft = clientRect.left / transformScale;
+      const pLeft = parentRect.left / transformScale;
+      const cTop = clientRect.top / transformScale;
+      const pTop = parentRect.top / transformScale;
+      newPosition.left = cLeft - pLeft + offsetParent.scrollLeft;
+      newPosition.top = cTop - pTop + offsetParent.scrollTop;
+      setDragging(newPosition);
+      const xy = calcXY(newPosition);
+      onDragStart({
+        i,
+        position: xy,
+        event: {
+          e,
+          node,
+          position: newPosition
+        }
+      });
+    },
+    [calcXY, i, onDragStart, transformScale]
+  );
+  const _onDrag = useCallback(
+    (e: DraggableEvent, { node, deltaX, deltaY }: DraggableData) => {
+      if (!onDrag) return;
+      const newPosition: Position = { top: 0, left: 0 };
+      if (!dragging) throw new Error('onDrag called before onDragStart.');
+      newPosition.left = dragging.left + deltaX;
+      newPosition.top = dragging.top + deltaY;
+      setDragging(newPosition);
+      const xy = calcXY(newPosition);
+      onDrag({
+        i,
+        position: xy,
+        event: {
+          e,
+          node,
+          position: newPosition
+        }
+      });
+    },
+    [calcXY, dragging, i, onDrag]
+  );
+  const _onDragStop = useCallback(
+    (e: DraggableEvent, { node }: DraggableData) => {
+      if (!onDragStop) return;
+      const newPosition: Position = { top: 0, left: 0 };
+      if (!dragging) throw new Error('onDragEnd called before onDragStart.');
+      newPosition.left = dragging.left;
+      newPosition.top = dragging.top;
+      setDragging(null);
+      const xy = calcXY(newPosition);
+      onDragStop({
+        i,
+        position: xy,
+        event: {
+          e,
+          node,
+          position: newPosition
+        }
+      });
+    },
+    [calcXY, dragging, i, onDragStop]
+  );
+
+  const _onResizeStart = useCallback(
+    (e: React.SyntheticEvent, { node, size }: ResizeCallbackData) => {
+      if (!onResizeStart) return;
+      const wh = calcWH(size);
+      setResizing(size);
+      onResizeStart({ i, size: wh, event: { e, node, size } });
+    },
+    [calcWH, i, onResizeStart]
+  );
+  const _onResize = useCallback(
+    (e: React.SyntheticEvent, { node, size }: ResizeCallbackData) => {
+      if (!onResize) return;
+      const wh = calcWH(size);
+      setResizing(size);
+      onResize({ i, size: wh, event: { e, node, size } });
+    },
+    [calcWH, i, onResize]
+  );
+  const _onResizeStop = useCallback(
+    (e: React.SyntheticEvent, { node, size }: ResizeCallbackData) => {
+      if (!onResizeStop) return;
+      const wh = calcWH(size);
+      setResizing(null);
+      onResizeStop({ i, size: wh, event: { e, node, size } });
+    },
+    [calcWH, i, onResizeStop]
+  );
+
   const mixinResizbale = useCallback(
     (fp: React.ReactElement, position: Block): React.ReactElement => {
-      console.log(fp);
       if (!isResizable) return fp;
       const minWH = calcPosition(0, 0, minW, minH);
       const minConstraints: [number, number] = [minWH.width, minWH.height];
@@ -128,26 +277,38 @@ const GridItem = memo((props: GridItemProps) => {
           height={position.height}
           minConstraints={minConstraints}
           maxConstraints={maxConstraints}
-          // onResizeStop={onResizeStop}
-          // onResizeStart={onResizeStart}
-          // onResize={onResize}
+          onResizeStart={_onResizeStart}
+          onResize={_onResize}
+          onResizeStop={_onResizeStop}
         >
           {fp}
         </Resizable>
       );
     },
-    [calcPosition, isResizable, maxCols, maxH, maxRows, maxW, minH, minW, x]
+    [
+      _onResize,
+      _onResizeStart,
+      _onResizeStop,
+      calcPosition,
+      isResizable,
+      maxCols,
+      maxH,
+      maxRows,
+      maxW,
+      minH,
+      minW,
+      x
+    ]
   );
 
   const mixinDraggable = useCallback(
     (fp: React.ReactElement): React.ReactElement => {
-      console.log(fp);
       if (!isDraggable) return fp;
       return (
         <DraggableCore
-          // onStart={onDragStart}
-          // onDrag={onDrag}
-          // onStop={onDragStop}
+          onStart={_onDragStart}
+          onDrag={_onDrag}
+          onStop={_onDragStop}
           handle={handle}
           cancel={`.react-resizable-handle${cancel ? ', ' + cancel : ''}`}
           scale={transformScale}
@@ -156,20 +317,19 @@ const GridItem = memo((props: GridItemProps) => {
         </DraggableCore>
       );
     },
-    [cancel, handle, isDraggable, transformScale]
+    [
+      _onDrag,
+      _onDragStart,
+      _onDragStop,
+      cancel,
+      handle,
+      isDraggable,
+      transformScale
+    ]
   );
-
-  const itemPosition = useMemo(() => calcPosition(x, y, w, h), [
-    calcPosition,
-    h,
-    w,
-    x,
-    y
-  ]);
 
   const item = useMemo(() => {
     const child = React.Children.only(children);
-    console.log(child);
     return React.cloneElement(child, {
       className: classNames(
         'react-grid-layout-item',
@@ -180,7 +340,6 @@ const GridItem = memo((props: GridItemProps) => {
           resizing: Boolean(resizing),
           'react-draggable': isDraggable,
           'react-draggable-dragging': Boolean(dragging),
-          dropping: Boolean(droppingPosition),
           cssTransforms: cssTransforms
         }
       ),
@@ -195,7 +354,6 @@ const GridItem = memo((props: GridItemProps) => {
     createStyle,
     cssTransforms,
     dragging,
-    droppingPosition,
     isDraggable,
     isStatic,
     itemPosition,

@@ -1,3 +1,7 @@
 import GridItem from './components/GridItem';
 
-export default GridItem;
+const RGL = {
+  GridItem
+};
+
+export default RGL;
