@@ -2,8 +2,8 @@ import React, { memo, useMemo, useState, useEffect, useCallback } from 'react';
 import { bottom, getLayoutItem, right } from '../utils/baseUtils';
 import { BaseProps, ResizableHandles } from '../interfaces';
 import map from 'lodash/map';
-import GridLine from './GridLine';
-import GridItem from './GridItem';
+import GridLine from '../components/GridLine';
+import GridItem from '../components/GridItem';
 
 import '../css/styles.css';
 

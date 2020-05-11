@@ -30,7 +30,7 @@ export default function WidthProvider(
       rowHeight: 0
     };
 
-    mounted: boolean = false;
+    mounted = false;
 
     componentDidMount() {
       this.mounted = true;
