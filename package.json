@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "dev": "webpack-dev-server --config ./config/webpack.dev.config.js",
     "build": "tsc"
   },
   "keywords": [
@@ -17,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "classnames": "^2.2.6",
+    "html-webpack-plugin": "^4.3.0",
     "lodash": "^4.17.15",
     "react-draggable": "^4.3.1",
     "react-resizable": "^1.10.1"
@@ -55,9 +57,11 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "ts-jest": "^25.4.0",
+    "ts-loader": "^7.0.3",
     "typescript": "^3.8.3",
     "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0"
   },
   "browserslist": [
     ">0.2%",

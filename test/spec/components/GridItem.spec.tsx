@@ -5,7 +5,7 @@ import GridItem from '../../../src/components/GridItem';
 describe('GridItem', () => {
   it('renders with text', () => {
     const text = 'text';
-    const item = render(
+    const { getByText, debug } = render(
       <GridItem
         className="grid-item"
         style={{ backgroundColor: '#123', width: '100%', height: '100%' }}
@@ -20,17 +20,11 @@ describe('GridItem', () => {
         rowHeight={60}
         cssTransforms
         i="item1"
-        cols={10}
-        rows={10}
       >
-        <div>
-          <span>{text}</span>
-        </div>
+        <div>{text}</div>
       </GridItem>
     );
-    // console.log(item.container);
-    // expect(item.container.childNodes[0]).toEqual(
-    //   'react-grid-layout-item grid-item'
-    // );
+    debug();
+    expect(getByText(text)).toBeInTheDocument();
   });
 });

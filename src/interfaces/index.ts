@@ -165,9 +165,13 @@ export interface GridLineProps {
   height: number;
   cols: number;
   rows: number;
-  borderWidth: number;
-  borderStyle: string;
-  borderColor: string;
+  colWidth: number;
+  rowHeight: number;
+  margin: [number, number];
+  padding: [number, number];
+  lineWidth?: number; // 网格线宽
+  lineStyle?: string; // 网格线样式
+  lineColor?: string; // 网格线颜色
 }
 
 export interface BaseProps {
@@ -193,7 +197,6 @@ export interface BaseProps {
   containerPadding?: [number, number]; // 容器内边距
   isDraggable?: boolean; // 可拖拽
   isResizable?: boolean; // 可改变大小
-  isDroppable?: boolean; // 可拖动添加
   showGridLine?: boolean; // 显示网格线
   lineWidth?: number; // 网格线宽
   lineStyle?: string; // 网格线样式

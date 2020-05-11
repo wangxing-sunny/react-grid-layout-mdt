@@ -27,9 +27,9 @@ const ReactGridLayout = memo((props: BaseProps) => {
     isDraggable = true,
     isResizable = true,
     showGridLine = true,
-    lineWidth = 1,
-    lineStyle = 'solid',
-    lineColor = '#38497b',
+    lineWidth,
+    lineStyle,
+    lineColor,
     resizableHandles = [ResizableHandles.se],
     draggableCancel,
     draggableHandle,
@@ -78,12 +78,9 @@ const ReactGridLayout = memo((props: BaseProps) => {
   }, [colWidth, containerPadding, currentCols, currentRows, margin, rowHeight]);
 
   const processGridItem = useCallback(
-    (child: React.ReactNode): React.ReactElement | null => {
-      if (!child || !(child as React.ReactElement).key) return;
-      const l = getLayoutItem(
-        currentLayout,
-        String((child as React.ReactElement).key)
-      );
+    (child: React.ReactElement): React.ReactElement | null => {
+      if (!child || !child.key) return null;
+      const l = getLayoutItem(currentLayout, String(child.key));
       if (!l) return null;
       const draggable = Boolean(
         !l.isStatic &&
@@ -107,12 +104,6 @@ const ReactGridLayout = memo((props: BaseProps) => {
           cancel={draggableCancel}
           handle={draggableHandle}
           resizeHandles={resizableHandles}
-          // onDragStart={onDragStart}
-          // onDrag={onDrag}
-          // onDragStop={onDragStop}
-          // onResizeStart={onResizeStart}
-          // onResize={onResize}
-          // onResizeStop={onResizeStop}
           isDraggable={draggable}
           isResizable={resizable}
           cssTransforms={cssTransforms}
@@ -156,11 +147,15 @@ const ReactGridLayout = memo((props: BaseProps) => {
         <GridLine
           cols={currentCols}
           rows={currentRows}
+          colWidth={colWidth}
+          rowHeight={rowHeight}
+          margin={margin}
+          padding={containerPadding}
           width={layoutSize.width}
           height={layoutSize.height}
-          borderWidth={lineWidth}
-          borderStyle={lineStyle}
-          borderColor={lineColor}
+          lineWidth={lineWidth}
+          lineStyle={lineStyle}
+          lineColor={lineColor}
         />
       )}
       {map(children, child => processGridItem(child))}
