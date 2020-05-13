@@ -1,11 +1,18 @@
 import React, { memo, useMemo, useState, useEffect, useCallback } from 'react';
-import { bottom, getLayoutItem, right } from '../utils/baseUtils';
-import { BaseProps, ResizableHandles } from '../interfaces';
+import {
+  bottom,
+  getLayoutItem,
+  right,
+  synchronizeLayout
+} from '../utils/baseUtils';
+import { BaseProps, ResizableHandles, CompactType } from '../interfaces/index';
 import map from 'lodash/map';
+// import { useMount } from 'react-use';
 import GridLine from '../components/GridLine';
 import GridItem from '../components/GridItem';
 
-import '../css/styles.css';
+import '../style/index.css';
+import cloneDeep from 'lodash/cloneDeep';
 
 const ReactGridLayout = memo((props: BaseProps) => {
   const {
@@ -20,7 +27,7 @@ const ReactGridLayout = memo((props: BaseProps) => {
     // autoSize = true,
     // squareGrid = false,
     layout,
-    // compactType = '',
+    compactType = CompactType.vertical,
     // preventCollision = false,
     margin = [5, 5],
     containerPadding = [0, 0],
@@ -51,8 +58,13 @@ const ReactGridLayout = memo((props: BaseProps) => {
   const [currentLayout, setCurrentLayout] = useState(layout);
 
   useEffect(() => {
-    setCurrentLayout(layout);
-  }, [layout]);
+    const currentCols = right(layout);
+    console.log('layout:', cloneDeep(layout));
+    const newLayout = synchronizeLayout(layout, currentCols, compactType);
+    console.log('currentLayout:', cloneDeep(newLayout));
+    setCurrentLayout(newLayout);
+    console.log(2);
+  }, [compactType, layout]);
 
   const currentCols = useMemo(() => {
     return right(currentLayout);

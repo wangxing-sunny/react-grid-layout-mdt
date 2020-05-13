@@ -365,4 +365,6 @@ const GridItem = memo((props: GridItemProps) => {
   return mixinDraggable(mixinResizbale(item, itemPosition));
 });
 
+GridItem.displayName = 'GridItem';
+
 export default GridItem;

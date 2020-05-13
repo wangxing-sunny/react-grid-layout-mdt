@@ -4,6 +4,7 @@ import map from 'lodash/map';
 import isEqual from 'lodash/isEqual';
 import filter from 'lodash/filter';
 import cloneDeep from 'lodash/cloneDeep';
+import findIndex from 'lodash/findIndex';
 
 /**
  * 计算布局最底部坐标
@@ -104,7 +105,7 @@ export function compact(
       l = compactItem(compareWith, l, compactType, cols, sorted);
       compareWith.push(l);
     }
-    out[layout.indexOf(sorted[i])] = l;
+    out[findIndex(layout, l => l.i === sorted[i].i)] = l;
     l.moved = false;
   }
   return out;
@@ -449,37 +450,16 @@ export function sortLayoutItemsByColRow(layout: Layout): Layout {
 /**
  * 使用children生成layout
  */
-export function synchronizeLayoutWithChildren(
+export function synchronizeLayout(
   initialLayout: Layout,
-  children: React.ReactElement,
   cols: number,
   compactType: CompactType
 ): Layout {
   initialLayout = initialLayout || [];
 
   let layout: Layout = [];
-  React.Children.forEach(children, (child: React.ReactElement, i: number) => {
-    const exists = getLayoutItem(initialLayout, String(child.key));
-    if (exists) {
-      layout[i] = cloneLayoutItem(exists);
-    } else {
-      const g = child.props['data-grid'];
-      if (g) {
-        layout[i] = cloneLayoutItem({ ...g, i: child.key });
-      } else {
-        layout[i] = cloneLayoutItem({
-          w: 1,
-          h: 1,
-          x: 0,
-          y: bottom(layout),
-          i: String(child.key)
-        });
-      }
-    }
-  });
-  layout = correctBounds(layout, { cols: cols });
+  layout = correctBounds(initialLayout, { cols: cols });
   layout = compact(layout, compactType, cols);
-
   return layout;
 }
 

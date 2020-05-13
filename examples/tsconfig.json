@@ -17,6 +17,5 @@
     "isolatedModules": true,
     "removeComments": true
   },
-  // "include": ["./src"]
   "files": ["./app.tsx"]
 }

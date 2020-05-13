@@ -157,7 +157,7 @@ export interface GridItemProps extends LayoutItem {
   onResizeStart?: LayoutItemResizeEvent;
   onResizeStop?: LayoutItemResizeEvent;
 
-  children: React.ReactElement;
+  children: JSX.Element;
 }
 
 export interface GridLineProps {
@@ -214,5 +214,5 @@ export interface BaseProps {
   onResizeStart?: LayoutEventCallback; // 开始调整大小
   onResize?: LayoutEventCallback; // 调整大小中
   onResizeStop?: LayoutEventCallback; // 停止调整大小
-  children?: React.ReactElement; // 子元素
+  children?: JSX.Element[]; // 子元素
 }

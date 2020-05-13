@@ -122,4 +122,6 @@ const GridLine = memo(
   }
 );
 
+GridLine.displayName = 'GridLine';
+
 export default GridLine;
